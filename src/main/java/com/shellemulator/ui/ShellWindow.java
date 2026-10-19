@@ -3,6 +3,7 @@ package com.shellemulator.ui;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import com.shellemulator.vfs.VirtualFileSystem;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
@@ -18,14 +19,15 @@ import com.shellemulator.commands.CommandParser;
  */
 public class ShellWindow extends JFrame {
     private final CommandParser parser = new CommandParser();
-    private final CommandDispatcher dispatcher = new CommandDispatcher();
+    private final CommandDispatcher dispatcher;
     private final JTextArea outputArea;
     private final JTextField inputField;
 
     /**
      * Creates the shell window and initializes its components.
      */
-    public ShellWindow() {
+    public ShellWindow(VirtualFileSystem filesystem) {
+        this.dispatcher = new CommandDispatcher(filesystem);
         setTitle(createWindowTitle());
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -36,6 +38,17 @@ public class ShellWindow extends JFrame {
         inputField.addActionListener(event -> processInput());
 
         setupLayout();
+    }
+    /**
+     * Displays the output produced by the startup script.
+     *
+     * @param text the startup dialogue to display
+     */
+    public void displayStartupOutput(String text) {
+        if (text != null && !text.isBlank()) {
+            outputArea.append(text);
+            outputArea.setCaretPosition(outputArea.getDocument().getLength());
+        }
     }
 
     /**

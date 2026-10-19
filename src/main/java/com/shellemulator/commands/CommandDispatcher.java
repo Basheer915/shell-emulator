@@ -1,8 +1,11 @@
+
 package com.shellemulator.commands;
 
+import com.shellemulator.vfs.VirtualFileSystem;
+
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Registers available commands and dispatches user requests to them.
@@ -13,32 +16,33 @@ public class CommandDispatcher {
 
     /**
      * Creates a dispatcher and registers the default commands.
+     *
+     * @param fileSystem the virtual filesystem used by commands
      */
-    public CommandDispatcher() {
-        registerCommand(new CdCommand());
-        registerCommand(new LsCommand());
+    public CommandDispatcher(VirtualFileSystem fileSystem) {
+        registerCommand(new CdCommand(fileSystem));
+        registerCommand(new LsCommand(fileSystem));
         registerCommand(new ExitCommand());
     }
-    /**
-     * Registers a command using its name as the lookup key.
-     *
-     * @param command the command to register
-     */
+
     private void registerCommand(Command command) {
         commands.put(command.getName(), command);
     }
+
     /**
      * Executes the command with the specified name and arguments.
      *
-     * @param name the name of the command to execute
-     * @param arguments the arguments passed to the command
-     * @return the command result, or an error message if the command is unknown
+     * @param name the command name
+     * @param arguments the command arguments
+     * @return the command result or an error message
      */
     public String execute(String name, List<String> arguments) {
         Command command = commands.get(name);
+
         if (command == null) {
             return "Unknown command: " + name;
         }
+
         return command.execute(arguments);
     }
 }
